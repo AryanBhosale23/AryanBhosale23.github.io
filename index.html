@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Aryan Bhosale | GRC and cloud compliance</title>
+<meta name="description" content="Aryan Bhosale: GWU cybersecurity graduate student building cloud compliance automation. A live-account AWS CIS scanner and a Terraform policy gate, mapped to ISO 27001, NIST 800-53 and SOC 2.">
+<meta property="og:title" content="Aryan Bhosale | GRC and cloud compliance">
+<meta property="og:description" content="Security controls turned into checks that run on their own: AWS CIS scanner, Terraform policy gate, ISO 27001 ISMS.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#eaf0ec;--card:#fbfdfb;--ink:#16212b;--soft:#4a5b66;--rule:#c3d3cb;--faint:rgba(22,33,43,.07);
+  --hl:#ffd83d;--pass:#12794a;--fail:#c42f2a;--blue:#244a86;--code:#e3ebe7;
+  --display:"Archivo","Arial Narrow",Arial,sans-serif;--body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;--mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+  --shadow:0 1px 0 rgba(22,33,43,.08),0 8px 20px -12px rgba(22,33,43,.3);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#0f1b21;--card:#15262e;--ink:#e7f0ea;--soft:#9db1ab;--rule:#2b4650;--faint:rgba(231,240,234,.06);
+  --pass:#4fcf8e;--fail:#ff7068;--blue:#8db3ff;--code:#0c161b;--shadow:0 1px 0 rgba(0,0,0,.4),0 10px 22px -14px rgba(0,0,0,.8);color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0f1b21;--card:#15262e;--ink:#e7f0ea;--soft:#9db1ab;--rule:#2b4650;--faint:rgba(231,240,234,.06);
+  --pass:#4fcf8e;--fail:#ff7068;--blue:#8db3ff;--code:#0c161b;--shadow:0 1px 0 rgba(0,0,0,.4),0 10px 22px -14px rgba(0,0,0,.8);color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:76px}
+body{margin:0;background:var(--paper);color:var(--ink);font:16.5px/1.62 var(--body);-webkit-font-smoothing:antialiased;
+  background-image:repeating-linear-gradient(to bottom,transparent 0 31px,var(--faint) 31px 32px)}
+h1,h2,h3,h4{font-family:var(--display);font-stretch:112%;font-weight:800;line-height:1.08;margin:0;letter-spacing:-.012em;text-wrap:balance}
+p{margin:0 0 .8em;max-width:66ch}
+a{color:var(--blue)}
+code,.mono{font-family:var(--mono);font-size:.86em}
+code{background:var(--code);padding:.08em .35em;border-radius:4px}
+:focus-visible{outline:3px solid var(--blue);outline-offset:3px;box-shadow:0 0 0 6px var(--hl)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.wrap{max-width:1040px;margin:0 auto;padding:0 clamp(16px,4vw,40px)}
+
+/* top bar */
+.bar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--card) 92%,transparent);backdrop-filter:blur(6px);border-bottom:2px solid var(--ink)}
+.bar .wrap{display:flex;align-items:center;gap:18px;height:58px}
+.mark{font:800 19px var(--display);font-stretch:125%;text-decoration:none;color:var(--ink);letter-spacing:-.02em;white-space:nowrap}
+.bar nav{display:flex;gap:2px;margin-left:auto;flex-wrap:nowrap}
+.bar nav a{padding:6px 10px;border-radius:8px;text-decoration:none;color:var(--ink);font-size:14.5px}
+.bar nav a:hover{background:var(--faint)}
+.bar nav a[aria-current="true"]{background:var(--hl);color:#16212b;font-weight:600}
+.tgl{white-space:nowrap;border:2px solid var(--ink);background:var(--card);color:var(--ink);border-radius:8px;padding:4px 10px;font:inherit;font-size:13.5px;cursor:pointer}
+
+/* hero */
+.hero{padding:64px 0 28px}
+.hero .grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:40px;align-items:end}
+.kicker{font:600 14px var(--body);color:var(--soft);margin-bottom:10px}
+.hero h1{font-size:clamp(46px,8.2vw,104px);font-stretch:125%;letter-spacing:-.035em;line-height:.96;margin-bottom:22px}
+.hero .lede{font-size:clamp(19px,2.2vw,24px);line-height:1.35;max-width:30ch;font-weight:500}
+.hero .intro{color:var(--ink);margin-top:14px;max-width:58ch}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+.btn{display:inline-block;background:var(--ink);color:var(--paper);border:2px solid var(--ink);border-radius:9px;padding:9px 18px;font-weight:600;text-decoration:none;transition:transform .08s}
+.btn:hover{transform:translateY(-2px)}
+.btn.ghost{background:transparent;color:var(--ink)}
+.sheet{background:var(--card);border:2px solid var(--ink);border-radius:12px;box-shadow:var(--shadow);overflow:hidden}
+.sheet header{background:var(--ink);color:var(--paper);padding:7px 14px;font:700 13px var(--display);font-stretch:112%;display:flex;justify-content:space-between}
+.sheet dl{margin:0;padding:6px 14px 10px;font-size:14.5px}
+.sheet .row{display:grid;grid-template-columns:92px 1fr;gap:10px;padding:7px 0;border-bottom:1px dashed var(--rule)}
+.sheet .row:last-child{border-bottom:0}
+.sheet dt{color:var(--soft)}
+.sheet dd{margin:0}
+
+/* sections */
+.sec{padding:54px 0 6px}
+.sec>.wrap>h2{font-size:clamp(28px,4vw,40px);font-stretch:118%;margin-bottom:6px}
+.sec .sub{color:var(--soft);max-width:60ch;margin-bottom:22px}
+
+/* proof strip with tickmarks */
+.proof{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;border:2px solid var(--ink);border-radius:12px;background:var(--card);box-shadow:var(--shadow);margin-top:34px}
+.proof>div{padding:14px 16px;border-right:1px solid var(--rule);position:relative}
+.proof>div:last-child{border-right:0}
+.proof b{display:block;font:800 clamp(26px,3.4vw,38px) var(--display);font-stretch:118%;line-height:1}
+.proof span{display:block;font-size:13.5px;color:var(--soft);margin-top:6px;line-height:1.35}
+.tick{position:absolute;top:10px;right:12px;color:var(--pass);font-weight:700;font-size:17px;opacity:0;transform:scale(.6) rotate(-12deg);animation:tick .5s .6s forwards}
+.proof>div:nth-child(2) .tick{animation-delay:.8s}.proof>div:nth-child(3) .tick{animation-delay:1s}.proof>div:nth-child(4) .tick{animation-delay:1.2s}
+@keyframes tick{to{opacity:1;transform:none}}
+.note{font-size:13.5px;color:var(--soft);margin-top:10px}
+.note b{color:var(--pass)}
+
+/* exhibits */
+.pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;position:relative}
+.ex{background:var(--card);border:2px solid var(--ink);border-radius:14px;box-shadow:var(--shadow);padding:20px 20px 18px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.ex .tag{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.ex .id{font:800 13px var(--display);font-stretch:118%;background:var(--hl);color:#16212b;padding:2px 10px;border-radius:99px}
+.stamp{display:inline-block;font:800 12.5px/1 var(--display);font-stretch:125%;letter-spacing:.04em;border:3px double currentColor;border-radius:5px;padding:4px 8px;transform:rotate(-3deg);text-transform:uppercase}
+.stamp.pass{color:var(--pass)} .stamp.blue{color:var(--blue)}
+.ex h3{font-size:25px}
+.ex ul{margin:0;padding:0;list-style:none}
+.ex li{padding-left:22px;position:relative;margin:.34em 0;font-size:15.5px}
+.ex li::before{content:"✓";position:absolute;left:0;color:var(--pass);font-weight:700}
+.pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+.pill{border:1.5px solid var(--ink);border-radius:99px;padding:1px 9px;font-size:12.5px;background:var(--paper)}
+.ex .links{margin-top:auto;padding-top:8px;display:flex;gap:14px;flex-wrap:wrap;font-weight:600}
+.flow{text-align:center;margin:16px auto 0;font:700 15px var(--display);font-stretch:112%}
+.flow span{background:var(--hl);color:#16212b;padding:3px 12px;border-radius:99px}
+
+/* more projects */
+.more{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:22px;align-items:start}
+details.card{background:var(--card);border:1.5px solid var(--ink);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow)}
+details.card summary{cursor:pointer;list-style:none;display:block}
+details.card summary::-webkit-details-marker{display:none}
+details.card h3{font-size:19px;margin-bottom:4px}
+details.card .cat{font-size:13px;color:var(--soft)}
+details.card summary::after{content:"Open details";display:inline-block;margin-top:8px;font-size:13.5px;font-weight:600;color:var(--blue);text-decoration:underline}
+details.card[open] summary::after{content:"Close details"}
+details.card .body{margin-top:10px;font-size:15px}
+details.card .body p{margin-bottom:.6em}
+
+/* ledger (experience, education) */
+.ledger{background:var(--card);border:2px solid var(--ink);border-radius:12px;box-shadow:var(--shadow);overflow:hidden}
+.led{display:grid;grid-template-columns:150px 1fr;gap:6px 20px;padding:16px 20px;border-bottom:1px solid var(--rule)}
+.led:last-child{border-bottom:0}
+.led .when{font:600 13.5px var(--mono);color:var(--soft);padding-top:3px}
+.led h3{font-size:19px;font-stretch:108%}
+.led .org{color:var(--soft);font-size:14.5px;margin:2px 0 6px}
+.led ul{margin:0;padding-left:18px}
+.led li{margin:.28em 0;font-size:15.5px}
+
+/* skills + creds */
+.skills{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.skills .box{background:var(--card);border:1.5px solid var(--ink);border-radius:12px;padding:14px 16px}
+.skills h3{font-size:17px;margin-bottom:8px}
+.skills .pills .pill{background:var(--paper)}
+.skills .hint{font-size:13px;color:var(--soft);margin:8px 0 0}
+.creds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.cred{background:var(--card);border:2px solid var(--ink);border-radius:12px;padding:16px 18px;display:flex;gap:14px;align-items:flex-start}
+.cred h3{font-size:18px;margin-bottom:4px}
+.cred p{font-size:15px;margin:0}
+
+/* contact */
+.contact{padding:60px 0 70px}
+.contact .box{background:var(--ink);color:var(--paper);border-radius:16px;padding:34px clamp(20px,4vw,44px);display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:24px;align-items:center}
+.contact h2{font-size:clamp(28px,4.4vw,44px);font-stretch:120%;color:var(--paper)}
+.contact p{color:var(--paper);opacity:.9}
+.contact .links{display:flex;flex-direction:column;gap:10px}
+.contact .links a{display:flex;justify-content:space-between;gap:12px;background:var(--paper);color:var(--ink);text-decoration:none;font-weight:600;border-radius:10px;padding:11px 16px;border:2px solid var(--paper)}
+.contact .links a:hover{background:var(--hl);color:#16212b}
+.contact .links small{font-weight:400;opacity:.75;overflow-wrap:anywhere;text-align:right}
+footer{border-top:2px solid var(--ink);padding:18px 0 40px;font-size:13.5px;color:var(--soft)}
+
+@media (max-width:900px){
+  .hero .grid,.pair,.contact .box{grid-template-columns:minmax(0,1fr)}
+  .more,.skills,.creds{grid-template-columns:minmax(0,1fr)}
+  .proof{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .proof>div:nth-child(2){border-right:0}.proof>div:nth-child(-n+2){border-bottom:1px solid var(--rule)}
+  .led{grid-template-columns:minmax(0,1fr)}
+  .bar nav a:not(.keep){display:none}
+}
+@media (max-width:620px){.bar nav{display:none}.tgl{margin-left:auto}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}.tick{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<a class="sr" href="#main">Skip to content</a>
+<div class="bar"><div class="wrap">
+  <a class="mark" href="#top">Aryan Bhosale</a>
+  <nav aria-label="Sections">
+    <a href="#work" class="keep">Projects</a><a href="#experience">Experience</a><a href="#skills">Skills</a><a href="#credentials">Credentials</a><a href="#contact" class="keep">Contact</a>
+  </nav>
+  <button class="tgl" id="theme" aria-label="Switch colour theme">Theme</button>
+</div></div>
+
+<main id="main">
+<section class="hero" id="top"><div class="wrap">
+  <div class="grid">
+    <div>
+      <div class="kicker">Arlington, VA · GWU M.S. Cybersecurity, May 2027</div>
+      <h1>Aryan Bhosale</h1>
+      <p class="lede">I turn security controls into checks that run on their own.</p>
+      <p class="intro">Cybersecurity graduate student focused on GRC engineering and cloud compliance automation. I hold the ISO/IEC 27001:2022 Lead Implementer certification, and I build tools that test AWS and Terraform against CIS controls and write the evidence an auditor can check.</p>
+      <div class="actions"><a class="btn" href="#work">See the projects</a><a class="btn ghost" href="#contact">Get in touch</a></div>
+    </div>
+    <div class="sheet" aria-label="File summary">
+      <header><span>File summary</span><span>Updated Nov 2026</span></header>
+      <dl>
+        <div class="row"><dt>Focus</dt><dd>GRC engineering, cloud compliance automation</dd></div>
+        <div class="row"><dt>Frameworks</dt><dd>ISO 27001:2022, NIST CSF 2.0 and 800-53, SOC 2, GDPR, CIS</dd></div>
+        <div class="row"><dt>Built with</dt><dd>Python, boto3, Terraform, OPA/Rego, Checkov, GitHub Actions</dd></div>
+        <div class="row"><dt>Market</dt><dd>Washington DC and Northern Virginia</dd></div>
+      </dl>
+    </div>
+  </div>
+  <div class="proof" role="list" aria-label="Checked figures">
+    <div role="listitem"><span class="tick" aria-hidden="true">✓</span><b>20</b><span>CIS checks in the live-account scanner, with 100 tests</span></div>
+    <div role="listitem"><span class="tick" aria-hidden="true">✓</span><b>10 → 13</b><span>of 20 passing on my own AWS account after fixing findings</span></div>
+    <div role="listitem"><span class="tick" aria-hidden="true">✓</span><b>12</b><span>Rego rules in the Terraform gate, with 75 OPA tests</span></div>
+    <div role="listitem"><span class="tick" aria-hidden="true">✓</span><b>35</b><span>ISO 27001 Annex A controls in the Helion ISMS matrix</span></div>
+  </div>
+  <p class="note"><b>✓</b> Each figure comes from something I can walk you through: a repo, a test run, a CI run or the Helion matrix. The tick marks borrow the auditor's habit of marking what has been agreed to source.</p>
+</div></section>
+
+<section class="sec" id="work"><div class="wrap">
+  <h2>Detect it, then prevent it</h2>
+  <p class="sub">Two public repositories that fit together. The scanner finds what is wrong in a live AWS account. The gate stops the same problems from being created.</p>
+  <div class="pair">
+    <article class="ex">
+      <div class="tag"><span class="id">Project 1</span><span class="stamp blue">Detective</span></div>
+      <h3>AWS CIS scanner</h3>
+      <p>A read-only Python scanner that runs 20 checks from the CIS AWS Foundations Benchmark v7.1.0 against a live account and writes evidence for every resource it looks at.</p>
+      <ul>
+        <li>Covers IAM, S3, CloudTrail, Config, VPC and KMS, with each check mapped to the benchmark</li>
+        <li>An access error is recorded as ERROR and never as a pass</li>
+        <li>100 tests against a mocked AWS (moto); no real account is touched in testing</li>
+        <li>On my own account: 10 of 20 passing, then 13 of 20 after fixes, with one risk accepted on purpose and written down</li>
+      </ul>
+      <div class="pills"><span class="pill">Python</span><span class="pill">boto3</span><span class="pill">moto</span><span class="pill">CIS v7.1.0</span></div>
+      <div class="links"><a href="https://github.com/AryanBhosale23/aws-cis-scanner">View on GitHub</a></div>
+    </article>
+    <article class="ex">
+      <div class="tag"><span class="id">Project 2</span><span class="stamp pass">Preventive</span></div>
+      <h3>Terraform policy gate</h3>
+      <p>A GitHub Actions gate that reads a Terraform plan for AWS and fails it if it breaks one of 12 CIS controls, before anything is built. Custom OPA/Rego rules decide; Checkov gives a second opinion.</p>
+      <ul>
+        <li>12 rules, each mapped to NIST 800-53 Rev 5, ISO 27001:2022 and SOC 2, with 75 OPA tests written test-first</li>
+        <li>A secure example passes 12 of 12 and an insecure example fails 12 of 12 (14 failing resources); CI checks both on every push</li>
+        <li>Per-resource evidence records tied to the plan's SHA-256 hash, plus JSON, Markdown and HTML reports</li>
+        <li>Limits are documented: root module only, plan time only</li>
+      </ul>
+      <div class="pills"><span class="pill">Terraform</span><span class="pill">OPA / Rego</span><span class="pill">Checkov</span><span class="pill">GitHub Actions</span></div>
+      <div class="links"><a href="https://github.com/AryanBhosale23/terraform-policy-gate">View on GitHub</a></div>
+    </article>
+  </div>
+  <p class="flow"><span>Project 1 finds what is wrong now. Project 2 stops it being created.</span></p>
+
+  <div class="more">
+    <details class="card">
+      <summary><h3>Helion Technologies ISMS</h3><div class="cat">ISO 27001 · NIST CSF 2.0 · GDPR</div></summary>
+      <div class="body">
+        <p>An end-to-end information security management system for a fictional cloud-native B2B SaaS company (HR and payroll, about 500 employees, AWS multi-tenant, GDPR-scoped).</p>
+        <p>A 35-control ISO 27001:2022 Annex A compliance matrix with status, owners and evidence specifications, a Statement of Applicability meeting Clause 6.1.3, and a risk register of 7 threat scenarios scored by likelihood and impact.</p>
+        <p><a href="https://helion-grc-dashboard-le75l4mg3khb5apqd2m3ej.streamlit.app/">Live dashboard</a> · <a href="https://github.com/AryanBhosale23/helion-grc-dashboard">Dashboard code</a></p>
+      </div>
+    </details>
+    <details class="card">
+      <summary><h3>PII detection and masking tool</h3><div class="cat">DLP · Data classification</div></summary>
+      <div class="body">
+        <p>A tool that detects and masks PAN and passport data, applying data-classification rules and documenting the controls it supports for DLP and privacy-inventory practice.</p>
+      </div>
+    </details>
+    <details class="card">
+      <summary><h3>Missing-Person-Portal</h3><div class="cat">PHP · OSINT</div></summary>
+      <div class="body">
+        <p>A portal that turns missing-person details into PDF reports for law enforcement, with an integrated OSINT tutorial.</p>
+        <p><a href="https://github.com/AryanBhosale23/Missing-Person-Portal">View on GitHub</a></p>
+      </div>
+    </details>
+  </div>
+</div></section>
+
+<section class="sec" id="experience"><div class="wrap">
+  <h2>Experience</h2>
+  <p class="sub">Newest first.</p>
+  <div class="ledger">
+    <div class="led"><div class="when">Jun – Aug 2026</div><div>
+      <h3>Cybersecurity Policy Analysis Intern</h3><div class="org">Solar Energy Industries Association (SEIA), Washington, DC</div>
+      <ul><li>Evaluated cybersecurity program maturity and workforce needs across six solar and energy storage organizations through structured stakeholder interviews, assessing control adoption against NERC CIP, IEC 62443 and NIST CSF, and drawing on more than 25 secondary sources.</li>
+      <li>Wrote a landscape report with recommendations for member companies, policymakers and educational institutions, coordinating with a Director of Cybersecurity Policy through four review cycles.</li></ul></div></div>
+    <div class="led"><div class="when">Jan – Jun 2025</div><div>
+      <h3>SIEM/SOC Analyst</h3><div class="org">DCDIUM Technologies, Pune, India</div>
+      <ul><li>Ran risk-based security and privacy assessments using SIEM and vulnerability data, found control gaps, and maintained security documentation, procedures and playbooks aligned to ISO 27001 and NIST CSF.</li>
+      <li>Wrote incident summaries and executive updates that put technical findings in business language.</li></ul></div></div>
+    <div class="led"><div class="when">Jun – Aug 2023</div><div>
+      <h3>Forensic Investigator</h3><div class="org">CyberCrime Helpline LLP, Pune, India</div>
+      <ul><li>Investigated more than 70 devices under strict chain-of-custody and data-handling protocols, using MobilEdit and Recuva for data extraction and recovery, and wrote detailed reports and timelines for internal review.</li></ul></div></div>
+    <div class="led"><div class="when">May – Jul 2022</div><div>
+      <h3>Software Tester</h3><div class="org">FlipLocation Pvt Ltd, Pune, India</div>
+      <ul><li>Documented test cases, data flows and defect reports, and supported internal audit activities with repeatable process documentation.</li></ul></div></div>
+  </div>
+
+  <h2 style="margin-top:44px;font-size:28px">Education</h2>
+  <div class="ledger" style="margin-top:14px">
+    <div class="led"><div class="when">Aug 2025 – May 2027</div><div><h3>M.S. Cybersecurity, Computer Science</h3><div class="org" style="margin:0">George Washington University, Washington, DC</div></div></div>
+    <div class="led"><div class="when">Aug 2021 – May 2025</div><div><h3>B.Tech. Computer Science and Information Technology, Cyber Security</h3><div class="org" style="margin:0">Symbiosis Skills and Professional University, India</div></div></div>
+  </div>
+</div></section>
+
+<section class="sec" id="skills"><div class="wrap">
+  <h2>Skills</h2>
+  <p class="sub">Grouped by what I use them for. Tools in the second group are the ones I used to build Projects 1 and 2.</p>
+  <div class="skills">
+    <div class="box"><h3>Frameworks and standards</h3><div class="pills"><span class="pill">ISO/IEC 27001:2022</span><span class="pill">NIST CSF 2.0</span><span class="pill">NIST 800-53 Rev 5</span><span class="pill">GDPR</span><span class="pill">SOC 2</span><span class="pill">CIS Controls</span><span class="pill">ISO 27701</span><span class="pill">CPRA/CCPA</span><span class="pill">NERC CIP</span><span class="pill">IEC 62443</span></div></div>
+    <div class="box"><h3>Cloud and compliance automation</h3><div class="pills"><span class="pill">AWS</span><span class="pill">Python, boto3</span><span class="pill">Terraform</span><span class="pill">OPA / Rego</span><span class="pill">Checkov</span><span class="pill">GitHub Actions</span><span class="pill">Streamlit</span></div><p class="hint">Terraform and Rego are recent skills, built through Project 2.</p></div>
+    <div class="box"><h3>GRC and compliance</h3><div class="pills"><span class="pill">Risk assessment</span><span class="pill">Control mapping</span><span class="pill">ISMS design</span><span class="pill">Statement of Applicability</span><span class="pill">Audit documentation</span><span class="pill">Stakeholder interviewing</span></div></div>
+    <div class="box"><h3>Security tools and platforms</h3><div class="pills"><span class="pill">Wazuh SIEM</span><span class="pill">Splunk</span><span class="pill">Security Onion</span><span class="pill">Wireshark</span><span class="pill">Nmap</span><span class="pill">ServiceNow</span><span class="pill">Linux</span><span class="pill">Windows</span><span class="pill">Microsoft 365</span></div></div>
+    <div class="box"><h3>AI and automation</h3><div class="pills"><span class="pill">Prompt engineering</span><span class="pill">Claude, Gemini, ChatGPT</span><span class="pill">Agentic AI</span><span class="pill">Workflow automation</span></div></div>
+  </div>
+</div></section>
+
+<section class="sec" id="credentials"><div class="wrap">
+  <h2>Credentials</h2>
+  <div class="creds">
+    <div class="cred"><span class="stamp pass">Certified</span><div><h3>ISO/IEC 27001:2022 Lead Implementer</h3><p>TÜV SÜD South Asia. ISMS design, risk assessment, Annex A implementation and internal audit.</p></div></div>
+    <div class="cred"><span class="stamp blue">Simulations</span><div><h3>Cybersecurity job simulations</h3><p>Mastercard and NY Jobs CEO Council (phishing, awareness metrics). Tata Group on Forage (IAM, access control).</p></div></div>
+  </div>
+</div></section>
+</main>
+
+<section class="contact" id="contact"><div class="wrap"><div class="box">
+  <div><h2>Let's talk about GRC engineering</h2><p>I am looking for GRC and cloud compliance roles in the Washington DC and Northern Virginia area. The fastest way to reach me is email.</p></div>
+  <div class="links">
+    <a href="mailto:bhosale.aryan.2363@gmail.com">Email <small>bhosale.aryan.2363@gmail.com</small></a>
+    <a href="https://www.linkedin.com/in/aryanbhosale23/">LinkedIn <small>aryanbhosale23</small></a>
+    <a href="https://github.com/AryanBhosale23">GitHub <small>AryanBhosale23</small></a>
+  </div>
+</div></div></section>
+<footer><div class="wrap">© 2026 Aryan Bhosale · Arlington, VA</div></footer>
+
+<script>
+(function(){
+  var root=document.documentElement,btn=document.getElementById('theme');
+  function stored(){try{return localStorage.getItem('theme')}catch(e){return null}}
+  function setLabel(){var dark=root.getAttribute('data-theme')==='dark'||(!root.getAttribute('data-theme')&&matchMedia('(prefers-color-scheme: dark)').matches);btn.textContent=dark?'Light mode':'Dark mode'}
+  var s=stored();if(s)root.setAttribute('data-theme',s);setLabel();
+  btn.addEventListener('click',function(){
+    var dark=root.getAttribute('data-theme')==='dark'||(!root.getAttribute('data-theme')&&matchMedia('(prefers-color-scheme: dark)').matches);
+    var next=dark?'light':'dark';root.setAttribute('data-theme',next);try{localStorage.setItem('theme',next)}catch(e){}setLabel();
+  });
+  var links=[].slice.call(document.querySelectorAll('.bar nav a'));
+  var map={};links.forEach(function(a){map[a.getAttribute('href').slice(1)]=a});
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){links.forEach(function(a){a.removeAttribute('aria-current')});var a=map[e.target.id];if(a)a.setAttribute('aria-current','true')}})},{rootMargin:'-40% 0px -55% 0px'});
+    Object.keys(map).forEach(function(id){var el=document.getElementById(id);if(el)io.observe(el)});
+  }
+})();
+</script>
+</body>
+</html>
